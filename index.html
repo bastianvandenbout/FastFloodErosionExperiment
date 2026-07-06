@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastFlood 1D Runoff & Erosion Visualizer</title>
+    <!-- Google Fonts: Outfit and JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrOXuhMATgESSwCs4UAwZa9VY8T8C1nyaxI1LJmrJHg0WXzQ7tGWJNClKnGvlEz" crossorigin="anonymous">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="logo-badge">1D</span>
+                <div class="logo-text">
+                    <h1>FastFlood <span>Runoff & Erosion Simulator</span></h1>
+                    <p class="subtitle">Geomorphology & Hydraulics Calibration Bench</p>
+                </div>
+            </div>
+            <div class="header-status">
+                <span class="status-indicator online"></span>
+                <span class="status-label">Simulation Engine Connected</span>
+            </div>
+        </header>
+
+        <!-- Control Bar -->
+        <section class="control-panel glass-card">
+            <div class="control-group">
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label for="slope-multiplier">Slope Multiplier</label>
+                        <span id="slope-val" class="badge">1.00x</span>
+                    </div>
+                    <input type="range" id="slope-multiplier" min="0.1" max="3.0" step="0.05" value="1.00">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label for="texture-multiplier">Grain Size Multiplier</label>
+                        <span id="texture-val" class="badge">1.00x</span>
+                    </div>
+                    <input type="range" id="texture-multiplier" min="0.1" max="5.0" step="0.1" value="1.00">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label for="ksat-val-input">Sat. Conductivity (Ksat)</label>
+                        <span id="ksat-val" class="badge">20.0 mm/h</span>
+                    </div>
+                    <input type="range" id="ksat-val-input" min="0.5" max="100.0" step="0.5" value="20.0">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label for="moisture-input">Rel. Soil Moisture (sm)</label>
+                        <span id="moisture-val" class="badge">0.80</span>
+                    </div>
+                    <input type="range" id="moisture-input" min="0.0" max="1.0" step="0.05" value="0.80">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label for="shape-b-input">Catchment Shape (b)</label>
+                        <span id="shape-b-val" class="badge">0.50</span>
+                    </div>
+                    <input type="range" id="shape-b-input" min="0.1" max="1.5" step="0.05" value="0.50">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label for="erosion-steps-input">Erosion Timesteps</label>
+                        <span id="erosion-steps-val" class="badge">24 steps (1h)</span>
+                    </div>
+                    <input type="range" id="erosion-steps-input" min="0" max="7" step="1" value="5">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-header">
+                        <label for="crit-stream-power-input">Crit. Stream Power</label>
+                        <span id="crit-stream-power-val" class="badge">0.20 cm/s</span>
+                    </div>
+                    <input type="range" id="crit-stream-power-input" min="0.0" max="2.0" step="0.05" value="0.20">
+                </div>
+            </div>
+            
+            <div class="action-group">
+                <button id="regenerate-btn" class="btn btn-primary">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l.56-.56"/>
+                    </svg>
+                    Regenerate Terrain
+                </button>
+            </div>
+        </section>
+
+        <!-- Main Visualizer Section -->
+        <main class="visualizer-grid">
+            <!-- Left panel: Canvas/Profile View -->
+            <div class="visualizer-main glass-card">
+                <div class="panel-header">
+                    <h2>1D Longitudinal Profile</h2>
+                    <div class="canvas-controls">
+                        <button id="zoom-in" class="btn btn-icon" title="Zoom In">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </button>
+                        <button id="zoom-out" class="btn btn-icon" title="Zoom Out">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </button>
+                        <button id="zoom-reset" class="btn btn-icon" title="Reset View">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                        </button>
+                        <span class="zoom-label">Drag to Pan | Scroll / Sliders to Zoom</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-container" id="profile-container">
+                    <canvas id="profile-canvas"></canvas>
+                    <div class="no-data-overlay" id="loading-overlay">
+                        <div class="spinner"></div>
+                        <p>Generating Terrain Profiles...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right panel: Active Cell Details -->
+            <div class="cell-telemetry glass-card">
+                <div class="panel-header">
+                    <h2>Active Cell Telemetry</h2>
+                    <span id="hover-cell-id" class="cell-badge">Hover Profile</span>
+                </div>
+                
+                <div class="telemetry-themes-container">
+                    <!-- Category 1: Terrain & Geomorphology -->
+                    <div class="telemetry-theme-group">
+                        <div class="theme-title">
+                            <span class="theme-icon">⛰️</span> Terrain & Soil
+                        </div>
+                        <div class="theme-rows">
+                            <div class="tel-row">
+                                <span class="tel-label">📍 Distance Upstream</span>
+                                <span class="tel-value-inline highlight-elevation"><span id="tel-distance">-</span><span class="tel-unit-inline">m</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">⛰️ Elevation (z)</span>
+                                <span class="tel-value-inline highlight-elevation"><span id="tel-elevation">-</span><span class="tel-unit-inline">m</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">📉 Local Slope (S)</span>
+                                <span class="tel-value-inline highlight-slope"><span id="tel-slope">-</span><span class="tel-unit-inline">m/m</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">🪨 Soil Cohesion</span>
+                                <span class="tel-value-inline highlight-cohesion"><span id="tel-cohesion">-</span><span class="tel-unit-inline">kPa</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">🌾 Grain Size (d50)</span>
+                                <span class="tel-value-inline highlight-grain" id="tel-grain">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category 2: Hydrology & Infiltration -->
+                    <div class="telemetry-theme-group">
+                        <div class="theme-title">
+                            <span class="theme-icon">🌧️</span> Hydrology & Inflow
+                        </div>
+                        <div class="theme-rows">
+                            <div class="tel-row">
+                                <span class="tel-label">🌧️ Storm Rainfall</span>
+                                <span class="tel-value-inline highlight-rain-tel"><span id="tel-total-rain">-</span><span class="tel-unit-inline">mm</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">📥 Soil Infiltration</span>
+                                <span class="tel-value-inline highlight-infil-tel" id="tel-total-infil">-</span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">💧 Lateral Interflow</span>
+                                <span class="tel-value-inline highlight-cohesion" id="tel-total-interflow">-</span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">📐 drainage Area</span>
+                                <span class="tel-value-inline highlight-elevation" id="tel-drainage-area">-</span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">🌿 Roughness (n)</span>
+                                <span class="tel-value-inline highlight-manning"><span id="tel-manning">-</span><span class="tel-unit-inline">s/m⅓</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category 3: Hydraulics & Routing -->
+                    <div class="telemetry-theme-group">
+                        <div class="theme-title">
+                            <span class="theme-icon">🌊</span> Hydraulics & Routing
+                        </div>
+                        <div class="theme-rows">
+                            <div class="tel-row">
+                                <span class="tel-label">⚡ Local Velocity (V)</span>
+                                <span class="tel-value-inline highlight-manning"><span id="tel-local-vel">-</span><span class="tel-unit-inline">m/s</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">➗ Shape parameter (b)</span>
+                                <span class="tel-value-inline highlight-cohesion" id="tel-shape-b">-</span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">📏 Travel Distance (L)</span>
+                                <span class="tel-value-inline highlight-elevation"><span id="tel-travel-L">-</span><span class="tel-unit-inline">m</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">🏃 Avg Upstream Vel</span>
+                                <span class="tel-value-inline highlight-manning"><span id="tel-avg-vel">-</span><span class="tel-unit-inline">m/s</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">📈 Steady-State (ss)</span>
+                                <span class="tel-value-inline highlight-grain" id="tel-ss-factor">-</span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">🌊 Peak Discharge (Qₚ)</span>
+                                <span class="tel-value-inline highlight-rain-tel"><span id="tel-peak-q">-</span><span class="tel-unit-inline">m³/s</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">📏 Peak Water Depth (hₚ)</span>
+                                <span class="tel-value-inline highlight-elevation" id="tel-peak-depth">-</span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">⏱ Flow Duration (window)</span>
+                                <span class="tel-value-inline highlight-cohesion" id="tel-flow-duration">-</span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">💧 Avg Runoff Intensity</span>
+                                <span class="tel-value-inline highlight-rain-tel"><span id="tel-runoff-intensity">-</span><span class="tel-unit-inline">mm/h</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category 4: Erosion & Sediment -->
+                    <div class="telemetry-theme-group">
+                        <div class="theme-title">
+                            <span class="theme-icon">🌾</span> Erosion & Sediment
+                        </div>
+                        <div class="theme-rows">
+                            <div class="tel-row">
+                                <span class="tel-label">🌾 Avg Transport Cap</span>
+                                <span class="tel-value-inline highlight-grain"><span id="tel-tc-val">-</span><span class="tel-unit-inline">kg/m³</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">⚡ Peak Stream Power</span>
+                                <span class="tel-value-inline highlight-manning"><span id="tel-peak-omega">-</span><span class="tel-unit-inline">cm/s</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">📈 Peak Transport Cap</span>
+                                <span class="tel-value-inline highlight-elevation"><span id="tel-peak-tc">-</span><span class="tel-unit-inline">kg/m³</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">🧪 Avg Sediment Conc</span>
+                                <span class="tel-value-inline highlight-rain-tel"><span id="tel-cs-val">-</span><span class="tel-unit-inline">kg/m³</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">🛡️ Erosion Efficiency</span>
+                                <span class="tel-value-inline highlight-manning" id="tel-gamma-val">-</span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">🌊 Settling Velocity</span>
+                                <span class="tel-value-inline highlight-elevation"><span id="tel-ws-val">-</span><span class="tel-unit-inline">mm/s</span></span>
+                            </div>
+                            <div class="tel-row">
+                                <span class="tel-label">🔄 Cell Net Erosion</span>
+                                <span id="tel-cell-net-container" class="tel-value-inline highlight-slope"><span id="tel-cell-net-val">-</span><span class="tel-unit-inline">kg</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="telemetry-footer-info">
+                    <p>Accumulation flows from left (Upstream, x = 0m) to right (Downstream, x = 2500m).</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Rainfall Editor Card -->
+        <section class="rainfall-editor-section glass-card">
+            <div class="panel-header">
+                <div class="title-with-desc">
+                    <h2>Rainfall Hyetograph Editor (24-Hour Storm Profile)</h2>
+                    <p class="subtitle">Click and drag bars vertically to set hourly rainfall intensity (Max 50 mm/h). Calculations update in real time.</p>
+                </div>
+                <div class="rainfall-stats">
+                    <span class="label">Total Storm Depth:</span>
+                    <span id="total-rain-val" class="badge badge-active">30.0 mm</span>
+                </div>
+            </div>
+            <div class="hyetograph-container">
+                <div id="rainfall-bars-editor"></div>
+            </div>
+        </section>
+
+        <!-- Charts Dashboard Section (Graphs Below) -->
+        <section class="charts-dashboard">
+            <div class="charts-header">
+                <h2>Temporal Cell Hydrographs</h2>
+                <p>Location-specific runoff and transport charts. Data will populate once simulation is run.</p>
+            </div>
+            
+            <div class="charts-grid">
+                <!-- Water Height Graph -->
+                <div class="chart-card glass-card">
+                    <div class="chart-header">
+                        <h3>Ponding & Infiltration (mm/h)</h3>
+                        <span class="badge badge-inactive" id="infil-chart-badge">Active Model</span>
+                    </div>
+                    <div class="chart-body" id="water-height-chart">
+                        <div class="chart-overlay-msg">Pending Hover Cell</div>
+                    </div>
+                </div>
+
+                <!-- Water Discharge Graph -->
+                <div class="chart-card glass-card">
+                    <div class="chart-header">
+                        <h3>Runoff Throughflow (Q)</h3>
+                        <span class="badge badge-inactive" id="discharge-chart-badge">Active Model</span>
+                    </div>
+                    <div class="chart-body" id="discharge-chart">
+                        <div class="chart-overlay-msg">Pending Hover Cell</div>
+                    </div>
+                </div>
+
+                <!-- Interflow Rate Graph -->
+                <div class="chart-card glass-card">
+                    <div class="chart-header">
+                        <h3>Interflow Rate (mm/h)</h3>
+                        <span class="badge badge-inactive" id="interflow-chart-badge">No Cell Pinned</span>
+                    </div>
+                    <div class="chart-body" id="sediment-chart">
+                        <div class="chart-overlay-msg">Hover or Click Cell to View Interflow</div>
+                    </div>
+                </div>
+
+                <!-- Sediment Concentration Graph -->
+                <div class="chart-card glass-card">
+                    <div class="chart-header">
+                        <h3>Sediment Concentration</h3>
+                        <span class="badge badge-inactive" id="sediment-conc-chart-badge">No Cell Pinned</span>
+                    </div>
+                    <div class="chart-body" id="sediment-conc-chart">
+                        <div class="chart-overlay-msg">Hover or Click Cell to View Sediment Concentration</div>
+                    </div>
+                </div>
+
+                <!-- Erosion & Deposition Rates Graph -->
+                <div class="chart-card glass-card">
+                    <div class="chart-header">
+                        <h3>Erosion & Deposition Rates</h3>
+                        <span class="badge badge-inactive" id="erosion-rates-chart-badge">No Cell Pinned</span>
+                    </div>
+                    <div class="chart-body" id="erosion-rates-chart">
+                        <div class="chart-overlay-msg">Hover or Click Cell to View Erosion/Deposition Rates</div>
+                    </div>
+                </div>
+
+                <!-- Catchment Spatial Sediment Profile -->
+                <div class="chart-card glass-card">
+                    <div class="chart-header">
+                        <h3>Catchment Net Erosion/Deposition Profile</h3>
+                        <span class="badge badge-active" id="spatial-sediment-chart-badge">Spatial Profile</span>
+                    </div>
+                    <div class="chart-body" id="spatial-sediment-chart">
+                        <!-- Redrawn after every simulation run -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Catchment Planform Geometry Section -->
+        <section class="catchment-geometry-section glass-card">
+            <div class="panel-header">
+                <div class="title-with-desc">
+                    <h2>Catchment Planform Geometry (Symmetrical Tapering Basin)</h2>
+                    <p class="subtitle">Symmetrical catchment boundary width $W(x) = W_{\text{max}} \cdot (x/L)^b$ draining to the outlet. Hover or pin cells to locate them in the basin.</p>
+                </div>
+                <div class="catchment-stats">
+                    <span class="label">Total Drainage Area:</span>
+                    <span id="total-catchment-area-val" class="badge badge-active">- km² (- ha)</span>
+                    <span class="label">Total Erosion:</span>
+                    <span id="total-erosion-val" class="badge badge-active">- kg</span>
+                    <span class="label">Total Deposition:</span>
+                    <span id="total-deposition-val" class="badge badge-active">- kg</span>
+                    <span class="label">Sediment Yield:</span>
+                    <span id="sediment-yield-val" class="badge badge-active">- kg</span>
+                </div>
+            </div>
+            <div class="catchment-canvas-container">
+                <canvas id="catchment-canvas"></canvas>
+            </div>
+        </section>
+    </div>
+
+    <!-- KaTeX JS and Auto-Render -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" integrity="sha384-cpW21hFrNyBhD9gL0jGrQQMRdQQ2dIPxDJJa3vihu/cFPVGLacDMqD4gWYNbUmIs" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ11UpS+qmS9hL5TJTnye61zCI2U5Iyb18Vzg9Ps18UrIpBzo" crossorigin="anonymous"
+        onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+    <!-- App Logic -->
+    <script src="app.js"></script>
+</body>
+</html>

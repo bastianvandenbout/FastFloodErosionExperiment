@@ -1,0 +1,776 @@
+/* CSS Variables for Premium Dark Mode Styling */
+:root {
+    --bg-base: #0a0c14;
+    --bg-surface: #121624;
+    --bg-card: rgba(22, 28, 48, 0.65);
+    --border-color: rgba(255, 255, 255, 0.07);
+    --border-hover: rgba(255, 255, 255, 0.15);
+    
+    /* Accents */
+    --accent-blue: #00d2ff;
+    --accent-blue-rgb: 0, 210, 255;
+    --accent-red: #ff4757;
+    --accent-red-rgb: 255, 71, 87;
+    --accent-green: #2ed573;
+    --accent-green-rgb: 46, 213, 115;
+    --accent-amber: #ffa502;
+    --accent-amber-rgb: 255, 165, 2;
+    --accent-purple: #a55eea;
+    --accent-purple-rgb: 165, 94, 234;
+    --accent-gold: #eccc68;
+    --accent-gold-rgb: 236, 204, 104;
+
+    /* Text */
+    --text-main: #f1f2f6;
+    --text-muted: #8b9bb4;
+    --text-inactive: #4d5c75;
+    
+    /* Glows */
+    --glow-shadow: 0 0 15px rgba(0, 210, 255, 0.25);
+    --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    
+    /* System */
+    --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --transition-speed: 0.2s;
+}
+
+/* Reset and Globals */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    padding: 2rem;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--bg-surface);
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-inactive);
+}
+
+.app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Glassmorphism Card Style */
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.glass-card:hover {
+    border-color: var(--border-hover);
+}
+
+/* Header */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-badge {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: #fff;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1.25rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+    letter-spacing: 0.5px;
+}
+
+.logo-text h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(to right, #fff, var(--text-muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.logo-text h1 span {
+    font-weight: 300;
+    color: var(--accent-blue);
+    background: none;
+    -webkit-text-fill-color: initial;
+}
+
+.subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.1rem;
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(46, 213, 115, 0.05);
+    padding: 0.4rem 0.8rem;
+    border: 1px solid rgba(46, 213, 115, 0.2);
+    border-radius: 20px;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-indicator.online {
+    background-color: var(--accent-green);
+    box-shadow: 0 0 8px var(--accent-green);
+}
+
+.status-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent-green);
+    letter-spacing: 0.5px;
+}
+
+/* Control Panel */
+.control-panel {
+    display: grid;
+    grid-template-columns: 4.5fr 1fr;
+    gap: 2rem;
+    padding: 1.25rem 1.75rem;
+    align-items: center;
+}
+
+.control-group {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1.0rem;
+}
+
+.slider-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slider-header label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.badge {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-blue);
+    font-weight: 600;
+}
+
+/* Sliders */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+    transition: transform 0.1s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.action-group {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    outline: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue), #00a8ff);
+    color: #0b0e17;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #00e5ff, var(--accent-blue));
+    box-shadow: 0 4px 20px rgba(0, 210, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+}
+
+.btn-icon {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 0.5rem;
+    border-radius: 6px;
+}
+
+.btn-icon:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--text-inactive);
+}
+
+.icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Main Visualizer Area */
+.visualizer-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.visualizer-main {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.canvas-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.zoom-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin-left: 0.5rem;
+}
+
+.canvas-container {
+    position: relative;
+    width: 100%;
+    height: 320px;
+    background: rgba(10, 12, 20, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#profile-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+}
+
+.no-data-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-surface);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(0, 210, 255, 0.1);
+    border-top: 3px solid var(--accent-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Telemetry Card */
+.cell-telemetry {
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.cell-badge {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.cell-badge.active {
+    background: rgba(0, 210, 255, 0.1);
+    color: var(--accent-blue);
+    border-color: rgba(0, 210, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.15);
+}
+
+.cell-badge.pinned {
+    background: rgba(165, 94, 234, 0.15);
+    color: var(--accent-purple);
+    border-color: rgba(165, 94, 234, 0.4);
+    box-shadow: 0 0 10px rgba(165, 94, 234, 0.2);
+}
+
+.telemetry-themes-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+}
+
+.telemetry-theme-group {
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 6px;
+    padding: 0.4rem 0.5rem;
+}
+
+.theme-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.35rem;
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.theme-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.tel-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.72rem;
+    padding: 0.1rem 0.2rem;
+    border-radius: 3px;
+    transition: background var(--transition-speed);
+    gap: 0.3rem;
+}
+
+.tel-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.tel-row .tel-label {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.71rem;
+}
+
+.tel-row .tel-value-inline {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: 0.71rem;
+}
+
+.tel-unit-inline {
+    color: var(--text-inactive);
+    font-size: 0.63rem;
+    margin-left: 0.12rem;
+}
+
+/* Highlight Colors for Telemetry Variables */
+.highlight-elevation {
+    color: var(--accent-gold);
+}
+.highlight-slope {
+    color: var(--accent-red);
+}
+.highlight-manning {
+    color: var(--accent-green);
+}
+.highlight-cohesion {
+    color: var(--accent-purple);
+}
+.highlight-grain {
+    color: var(--accent-amber);
+}
+.highlight-rain-tel {
+    color: var(--accent-blue);
+}
+.highlight-infil-tel {
+    color: var(--accent-green);
+}
+
+.telemetry-footer-info {
+    font-size: 0.7rem;
+    color: var(--text-inactive);
+    line-height: 1.2;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--border-color);
+    grid-column: 1 / -1; /* span both columns */
+}
+
+/* Charts Dashboard (Below) */
+.charts-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.charts-header h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.charts-header p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.chart-card {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chart-header h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.badge-inactive {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-inactive);
+    font-size: 0.65rem;
+    border: 1px solid var(--border-color);
+}
+
+.chart-body {
+    position: relative;
+    height: 150px;
+    background: rgba(10, 12, 20, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.placeholder-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.chart-axis-text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: #a5b3cd;
+}
+
+.chart-axis-text.red-tick {
+    fill: var(--accent-red);
+}
+
+.chart-axis-text.green-tick {
+    fill: var(--accent-green);
+}
+
+.chart-overlay-msg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.75rem;
+    color: var(--text-inactive);
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+    background: rgba(10, 12, 20, 0.85);
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    pointer-events: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive Scaling */
+@media (max-width: 1024px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    .telemetry-themes-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    body {
+        padding: 1rem;
+    }
+}
+
+/* Rainfall Editor Section */
+.rainfall-editor-section {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.title-with-desc h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.title-with-desc .subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-top: 0.2rem;
+}
+
+.rainfall-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.rainfall-stats .label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.badge-active {
+    background: rgba(0, 210, 255, 0.1);
+    color: var(--accent-blue);
+    border-color: rgba(0, 210, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.15);
+}
+
+.hyetograph-container {
+    background: rgba(10, 12, 20, 0.45);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    height: 160px;
+    position: relative;
+    overflow: hidden;
+}
+
+#rainfall-bars-editor {
+    width: 100%;
+    height: 100%;
+}
+
+/* Rainfall Editor SVG elements */
+.rain-bar {
+    fill: rgba(0, 210, 255, 0.35);
+    stroke: rgba(0, 210, 255, 0.7);
+    stroke-width: 1;
+    rx: 3;
+    cursor: ns-resize;
+    transition: fill 0.15s, stroke-width 0.15s;
+}
+
+.rain-bar:hover, .rain-bar.active {
+    fill: rgba(0, 210, 255, 0.6);
+    stroke: #fff;
+    stroke-width: 1.5;
+}
+
+.rain-gridline {
+    stroke: rgba(255, 255, 255, 0.04);
+    stroke-width: 1;
+}
+
+.rain-axis-line {
+    stroke: rgba(255, 255, 255, 0.15);
+    stroke-width: 1.5;
+}
+
+.rain-text {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    fill: var(--text-muted);
+}
+
+.rain-text-hour {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    fill: var(--text-inactive);
+}
+
+.rain-bar-node {
+    fill: var(--accent-blue);
+    stroke: rgba(255, 255, 255, 0.7);
+    stroke-width: 0.8;
+    transition: r 0.1s, fill 0.1s, stroke-width 0.1s;
+}
+
+.rain-bar-node:hover, .rain-bar-node.active {
+    r: 4.5;
+    fill: #ffffff;
+    stroke: var(--accent-blue);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 0 4px rgba(0, 210, 255, 0.8));
+}
+
+/* Catchment Planform Geometry Section */
+.catchment-geometry-section {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.catchment-canvas-container {
+    background: rgba(10, 12, 20, 0.45);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    height: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+#catchment-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.catchment-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.catchment-stats .label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
